@@ -9,6 +9,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
+from rest_framework.schemas import AutoSchema
+
+
+import coreapi
+from rest_framework.schemas import AutoSchema
+
 
 from Profile.models import Example3
 from Profile.models import ModelsEstadoCivil
@@ -17,14 +23,33 @@ from Profile.models import ModelsOcupacion
 from Profile.models import ModelsEstado
 from Profile.models import ModelsGenero
 
+
 from Profile.serializer import Example3Serializers
 from Profile.serializer import  EstadoCivilSerializers
 from Profile.serializer import CiudadSerializers
 from Profile.serializer import OcupacionSerializers
 from Profile.serializer import EstadoSerializers
 from Profile.serializer import GeneroSerializers
+import coreapi
+from rest_framework.permissions import IsAuthenticated
+
+
+class ProfileLisViewSchema(AutoSchema):
+    def get_manual_fields(self,path,method):
+        extra_fields = []
+        if method.lower() in ('post','get'):
+            extra_fields = [
+                coreapi.Field('nombre')
+            ]
+        manual_fields =super().get_manual_fields(path,method)
+        return manual_fields + extra_fields
+
 
 class ExampleList3(APIView):
+    
+    permission_classes =[IsAuthenticated]
+    esquema  =  ProfileLisViewSchema ()
+
     #METODO GET PARA SOLICITAR INFO
     def get (self , request , format = None):
         print("Metodo get filter")
@@ -41,24 +66,35 @@ class ExampleList3(APIView):
             return Response(datas)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
+
 class EstadoCivil(APIView):
+
+    permission_classes =[IsAuthenticated]
+    esquema  =  ProfileLisViewSchema ()
+
     #METODO GET PARA SOLICITAR INFO
     def get (self , request , format = None):
         print("Metodo get filter")
-        queryset = ModelsEstadoCivil.objects.filter(delete = False)
+        queryset = Example3.objects.filter(delete = False)
         #many true si se aplica retornos multiples objetos
-        serializer = EstadoCivilSerializers(queryset, many= True)
+        serializer = Example3Serializers(queryset, many= True)
         return Response(serializer.data)
 
     def post (self, request , format = None):
-        serializer = EstadoCivilSerializers(data = request.data)
+        serializer = Example3Serializers(data = request.data)
         if serializer.is_valid():
             serializer.save()
             datas = serializer.data
             return Response(datas)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
+
+
 class Ciudad(APIView):
+
+    permission_classes =[IsAuthenticated]
+    esquema  =  ProfileLisViewSchema ()
+
     #METODO GET PARA SOLICITAR INFO
     def get (self , request , format = None):
         print("Metodo get filter")
@@ -75,7 +111,13 @@ class Ciudad(APIView):
             return Response(datas)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
+
+
 class Ocupacion(APIView):
+
+    permission_classes =[IsAuthenticated]
+    esquema  =  ProfileLisViewSchema ()
+
     #METODO GET PARA SOLICITAR INFO
     def get (self , request , format = None):
         print("Metodo get filter")
@@ -92,7 +134,12 @@ class Ocupacion(APIView):
             return Response(datas)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
+
+
 class Estado(APIView):
+    permission_classes =[IsAuthenticated]
+    esquema  =  ProfileLisViewSchema ()
+
     #METODO GET PARA SOLICITAR INFO
     def get (self , request , format = None):
         print("Metodo get filter")
@@ -109,7 +156,12 @@ class Estado(APIView):
             return Response(datas)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
+
+
 class Genero(APIView):
+    permission_classes =[IsAuthenticated]
+    esquema  =  ProfileLisViewSchema ()
+
     #METODO GET PARA SOLICITAR INFO
     def get (self , request , format = None):
         print("Metodo get filter")
